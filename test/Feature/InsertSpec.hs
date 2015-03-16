@@ -200,3 +200,17 @@ spec = afterAll_ resetDb $ around withApp $ do
         g <- get "/auto_incrementing_pk?non_nullable_string=eq.c"
         liftIO $ simpleHeaders g
           `shouldSatisfy` matchHeader "Content-Range" "0-9/10"
+
+      it "can alternate posts and patches" $ do
+        post "/simple_pk"
+          [json| {"k":"aaa", "extra": "now"} |]
+            `shouldRespondWith` 201
+        request methodPatch "/simple_pk?k=eq.aaa" []
+          [json| { "extra":"then" } |]
+            `shouldRespondWith` 204
+        post "/simple_pk"
+          [json| {"k":"bbb", "extra": "now"} |]
+            `shouldRespondWith` 201
+        request methodPatch "/simple_pk?k=eq.bbb" []
+          [json| { "extra":"then" } |]
+            `shouldRespondWith` 204
