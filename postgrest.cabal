@@ -15,6 +15,35 @@ cabal-version:         >=1.10
 
 executable postgrest
   main-is:             PostgREST/Main.hs
+  build-depends:       base >=4.6 && <5
+                     , postgrest
+                     , hasql == 0.7.3, hasql-backend == 0.4.1
+                     , hasql-postgres == 0.10.3
+                     , warp >= 3.0.2, wai >= 3.0.1
+                     , wai-extra, wai-cors
+                     , wai-middleware-static >= 0.6.0
+                     , HTTP, convertible, http-types
+                     , case-insensitive
+                     , scientific, time
+                     , aeson, network >= 2.6
+                     , bytestring, text, split, string-conversions
+                     , stringsearch
+                     , containers, unordered-containers
+                     , optparse-applicative == 0.11.*
+                     , regex-base, regex-tdfa
+                     , regex-tdfa-text
+                     , Ranged-sets
+                     , transformers, MissingH
+                     , bcrypt >= 0.0.6, base64-string
+                     , network-uri >= 2.6
+                     , resource-pool
+                     , blaze-builder
+                     , vector
+                     , mtl
+                     , cassava
+  hs-source-dirs:      src
+
+library
   ghc-options:         -Wall -W -O2
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings, ScopedTypeVariables, QuasiQuotes
@@ -43,7 +72,7 @@ executable postgrest
                      , vector
                      , mtl
                      , cassava
-  Other-Modules:       PostgREST.App
+  Exposed-Modules:     PostgREST.App
                      , PostgREST.Auth
                      , PostgREST.Config
                      , PostgREST.Error
