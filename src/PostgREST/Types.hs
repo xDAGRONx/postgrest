@@ -1,5 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Types where
+module PostgREST.Types where
 
 import qualified Data.Aeson as JSON
 import Data.Aeson.Types (Parser)

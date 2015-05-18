@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Middleware where
+module PostgREST.Middleware where
 
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mconcat)
@@ -19,7 +19,7 @@ import Network.Wai (Application, requestHeaders, responseLBS, rawPathInfo,
                    rawQueryString, isSecure, Request(..), Response)
 import Network.URI (URI(..), parseURI)
 
-import Auth (LoginAttempt(..), signInRole, setRole, resetRole)
+import PostgREST.Auth (LoginAttempt(..), signInRole, setRole, resetRole)
 import Codec.Binary.Base64.String (decode)
 
 authenticated :: forall s. Text -> Text ->
