@@ -15,6 +15,7 @@ cabal-version:         >=1.10
 
 executable postgrest
   main-is:             PostgREST/Main.hs
+  default-extensions:  OverloadedStrings, ScopedTypeVariables, QuasiQuotes
   build-depends:       base >=4.6 && <5
                      , postgrest
                      , hasql == 0.7.3, hasql-backend == 0.4.1
@@ -80,7 +81,6 @@ library
                      , PostgREST.PgQuery
                      , PostgREST.PgStructure
                      , PostgREST.RangeQuery
-                     , PostgREST.Types
   hs-source-dirs:      src
 
 Test-Suite spec
@@ -90,15 +90,14 @@ Test-Suite spec
   Hs-Source-Dirs:      test, src
   ghc-options:         -Wall -W -Werror
   Main-Is:             Main.hs
-  Other-Modules:       App
-                     , Auth
-                     , Config
-                     , Error
-                     , Middleware
-                     , PgQuery
-                     , PgStructure
-                     , RangeQuery
-                     , Types
+  Other-Modules:       PostgREST.App
+                     , PostgREST.Auth
+                     , PostgREST.Config
+                     , PostgREST.Error
+                     , PostgREST.Middleware
+                     , PostgREST.PgQuery
+                     , PostgREST.PgStructure
+                     , PostgREST.RangeQuery
                      , Spec
                      , SpecHelper
   Build-Depends:       base, hspec >= 2.1.2, QuickCheck
