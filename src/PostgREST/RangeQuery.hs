@@ -3,6 +3,7 @@ module PostgREST.RangeQuery (
 , rangeRequested
 , rangeLimit
 , rangeOffset
+, maxFieldSize
 , NonnegRange
 ) where
 
@@ -42,7 +43,7 @@ rangeRequested = (rangeParse =<<) . lookup hRange
 rangeLimit :: NonnegRange -> Maybe Int
 rangeLimit range =
   case [rangeLower range, rangeUpper range]
-    of [BoundaryBelow from, BoundaryAbove to] -> Just (1 + to - from)
+    of [BoundaryBelow from, BoundaryAbove to] -> Just $ min maxFieldSize (1 + to - from)
        _ -> Nothing
 
 rangeOffset :: NonnegRange -> Int
@@ -58,3 +59,7 @@ rangeGeq n =
 rangeLeq :: Int -> NonnegRange
 rangeLeq n =
   Range BoundaryBelowAll (BoundaryAbove n)
+
+
+maxFieldSize :: Int
+maxFieldSize = 1073741823

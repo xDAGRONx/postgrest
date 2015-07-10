@@ -48,7 +48,7 @@ limitT :: Maybe NonnegRange -> StatementT
 limitT r q =
   q <> B.Stmt (" LIMIT " <> limit <> " OFFSET " <> offset <> " ") empty True
   where
-    limit  = maybe "ALL" (cs . show) $ join $ rangeLimit <$> r
+    limit  = cs . show $ fromMaybe maxFieldSize $ join (rangeLimit <$> r)
     offset = cs . show $ fromMaybe 0 $ rangeOffset <$> r
 
 whereT :: Net.Query -> StatementT
