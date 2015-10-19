@@ -4,18 +4,18 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Building declarative APIs">
+        
         <meta name="author" content="Joe Nelson">
-        <link rel="canonical" href="http://postgrest.com/">
-        <link rel="shortcut icon" href="./favicon.ico">
+        <link rel="canonical" href="http://postgrest.com/install/server/">
+        <link rel="shortcut icon" href="../../../../favicon.ico">
         
 
-	<title>PostgREST</title>
+	<title>The Server - PostgREST</title>
 
-        <link href="./css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="./css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link href="./css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="./css/highlight.css">
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -26,7 +26,7 @@
         
     </head>
 
-    <body class="homepage">
+    <body>
 
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
@@ -44,7 +44,7 @@
             
 
             <!-- Main title -->
-            <a class="navbar-brand" href=".">PostgREST</a>
+            <a class="navbar-brand" href="../..">PostgREST</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -54,25 +54,25 @@
                 <ul class="nav navbar-nav">
                 
                 
-                    <li class="active">
-                        <a href=".">Home</a>
+                    <li >
+                        <a href="../..">Home</a>
                     </li>
                 
                 
                 
-                    <li class="dropdown">
+                    <li class="dropdown active">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Install <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                         
                             
-<li >
-    <a href="install/server/">The Server</a>
+<li class="active">
+    <a href="./">The Server</a>
 </li>
 
                         
                             
 <li >
-    <a href="install/ecosystem/">Ecosystem</a>
+    <a href="../ecosystem/">Ecosystem</a>
 </li>
 
                         
@@ -87,13 +87,13 @@
                         
                             
 <li >
-    <a href="api/reading/">Reading</a>
+    <a href="../../api/reading/">Reading</a>
 </li>
 
                         
                             
 <li >
-    <a href="api/writing/">Writing</a>
+    <a href="../../api/writing/">Writing</a>
 </li>
 
                         
@@ -108,31 +108,31 @@
                         
                             
 <li >
-    <a href="admin/security/">Security</a>
+    <a href="../../admin/security/">Security</a>
 </li>
 
                         
                             
 <li >
-    <a href="admin/versioning/">Versioning</a>
+    <a href="../../admin/versioning/">Versioning</a>
 </li>
 
                         
                             
 <li >
-    <a href="admin/migration/">Migration</a>
+    <a href="../../admin/migration/">Migration</a>
 </li>
 
                         
                             
 <li >
-    <a href="admin/deployment/">Deployment</a>
+    <a href="../../admin/deployment/">Deployment</a>
 </li>
 
                         
                             
 <li >
-    <a href="admin/performance/">Performance</a>
+    <a href="../../admin/performance/">Performance</a>
 </li>
 
                         
@@ -147,7 +147,7 @@
                         
                             
 <li >
-    <a href="examples/start/">Getting Started</a>
+    <a href="../../examples/start/">Getting Started</a>
 </li>
 
                         
@@ -165,13 +165,13 @@
                     </a>
                 </li>
                 
-                    <li class="disabled">
-                        <a rel="next" >
+                    <li >
+                        <a rel="next" href="../..">
                             <i class="fa fa-arrow-left"></i> Previous
                         </a>
                     </li>
                     <li >
-                        <a rel="prev" href="install/server/">
+                        <a rel="prev" href="../ecosystem/">
                             Next <i class="fa fa-arrow-right"></i>
                         </a>
                     </li>
@@ -196,64 +196,79 @@
                 <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#introduction">Introduction</a></li>
+        <li class="main active"><a href="#installation">Installation</a></li>
         
-            <li><a href="#motivation">Motivation</a></li>
+            <li><a href="#installing-from-pre-built-release">Installing from Pre-Built Release</a></li>
         
-            <li><a href="#myths">Myths</a></li>
+            <li><a href="#building-from-source">Building from Source</a></li>
         
-            <li><a href="#conventions">Conventions</a></li>
+            <li><a href="#installing-postgresql">Installing PostgreSQL</a></li>
         
     
     </ul>
 </div></div>
                 <div class="col-md-9" role="main">
 
-<p><img alt="PostgREST logo" src="./img/logo.png" /></p>
-<h2 id="introduction">Introduction</h2>
-<p>PostgREST is a standalone web server that turns your database directly into a RESTful API. The structural constraints and permissions in the database determine the API endpoints and operations.</p>
-<p>This guide explains how to install the software and provides practical examples of its use. You'll learn how to build a fast, versioned, secure API and how to deploy it to production.</p>
-<p>The project has a friendly and growing community. Here are some ways to get help or get involved:</p>
-<ul>
-<li>The project <a href="https://gitter.im/begriffs/postgrest">chat room</a></li>
-<li>Report or search <a href="https://github.com/begriffs/postgrest/issues">issues</a></li>
-</ul>
-<h3 id="motivation">Motivation</h3>
-<p>Using PostgREST is an alternative to manual CRUD programming. Custom API servers suffer problems. Writing business logic often duplicates, ignores or hobbles database structure. Object-relational mapping is a leaky abstraction leading to slow imperative code. The PostgREST philosophy establishes a single declarative source of truth: the data itself.</p>
-<h4 id="declarative-programming">Declarative Programming</h4>
-<p>It's easier to ask Postgres to join data for you and let its query planner figure out the details than to loop through rows yourself. It's easier to assign permissions to db objects than to add guards in controllers. (This is especially true for cascading permissions in data dependencies.) It's easier set constraints than to litter code with sanity checks.</p>
-<h4 id="leakproof-abstraction">Leakproof Abstraction</h4>
-<p>There is no ORM involved. Creating new views happens in SQL with known performance implications. A database administrator can now create an API from scratch with no custom programming. </p>
-<h4 id="embracing-the-relational-model">Embracing the Relational Model</h4>
-<p>In 1970 E. F. Codd criticized the then-dominant hierarchical model of databases in his article <a href="https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf">A Relational Model of Data for Large Shared Data Banks</a>. Reading the article reveals a striking similarity between hierarchical databases and nested http routes. With PostgREST we attempt to use flexible filtering and embedding rather than nested routes.</p>
-<h4 id="one-thing-well">One Thing Well</h4>
-<p>PostgREST has a focused scope. It works well with other tools like Nginx. This forces you to cleanly separate the data-centric CRUD operations from other concerns. Use a collection of sharp tools rather than building a big ball of mud.</p>
-<h4 id="shared-improvements">Shared Improvements</h4>
-<p>As with any open source project, we all gain from features and fixes in the tool. It's more beneficial than improvements locked inextricably within custom codebases.</p>
-<h3 id="myths">Myths</h3>
-<h4 id="you-have-to-make-tons-of-stored-procs-and-triggers">You have to make tons of stored procs and triggers</h4>
-<p>Modern PostgreSQL features like auto-updatable views and computed columns make this mostly unnecessary. Triggers do play a part, but generally not for irksome boilerplate. When they are required triggers are preferable to ad-hoc app code anyway, since the former work reliably for any codepath.</p>
-<h4 id="exposing-the-database-destroys-encapsulation">Exposing the database destroys encapsulation</h4>
-<p>PostgREST does versioning through database schemas. This allows you to expose tables and views without making the app brittle. Underlying tables can be superseded and hidden behind public facing views. The chapter about versioning shows how to do this.</p>
-<h3 id="conventions">Conventions</h3>
-<p>This guide contains highlighted notes and tangential information interspersed with the text.</p>
-<div class="admonition note">
-    <p class="admonition-title">Design Consideration</p>
+<h2 id="installation">Installation</h2>
+<h3 id="installing-from-pre-built-release">Installing from Pre-Built Release</h3>
+<p>The <a href="https://github.com/begriffs/postgrest/releases/latest">release page</a> has precompiled binaries for Mac OS X and 64-bit Ubuntu. Next extract the tarball and run the binary inside with no arguments to see usage instructions:</p>
+<pre><code class="sh"># Untar the release (available at https://github.com/begriffs/postgrest/releases/latest)
 
-    <p>Contains history which informed the current design. Sometimes it discusses unavoidable tradeoffs or a point of theory.</p>
+$ tar zxf postgrest-0.2.11.1-osx.tar.xz
+
+# Try running it
+$ ./postgrest-0.2.11.1
+
+# You should see a usage help message
+</code></pre>
+
+<div class="admonition danger">
+    <p class="admonition-title">Deprecation Warning</p>
+
+    <p>The filename inside the tarball currently includes a version
+    number, but this will be removed in the next version for cleaner
+    post-extraction scripting.</p>
 </div>
 
 <div class="admonition warning">
     <p class="admonition-title">Invitation to Contribute</p>
 
-    <p>Points out things we know we want to add or improve. They might give you ideas for ways to contribute to the project.</p>
+    <p>I currently build the binaries manually for each version. We need to set up an automated build matrix for various architectures. It should support 32- and 64-bit versions of
+
+    <ul><li>Scientific Linux 6</li><li>CentOS</li><li>RHEL 6</li></ul>
+
+    Also it would be good to create packages for Homebrew, and apt.</p>
 </div>
 
-<div class="admonition danger">
-    <p class="admonition-title">Deprecation Warning</p>
+<p>We'll learn the meaning of the command line flags later, but here is a minimal example of running the app. It does all operations as user <code>postgres</code>, including for unauthenticated requests.</p>
+<pre><code class="sh">$ ./postgrest-0.2.11.1 -d dbname -U postgres --a postgres --v1schema public
+</code></pre>
 
-    <p>Alerts you to features which will be removed in the next major (breaking) release.</p>
-</div></div>
+<h3 id="building-from-source">Building from Source</h3>
+<p>When a prebuilt binary does not exist for your system you can build the project from source. You'll also need to do this if you want to help with development. <a href="https://github.com/commercialhaskell/stack">Stack</a> makes it easy. It will install any necessary Haskell dependencies on your system.</p>
+<ul>
+<li><a href="https://github.com/commercialhaskell/stack#how-to-install">Install Stack</a> for your platform</li>
+<li>Build the project</li>
+</ul>
+<pre><code class="bash">git clone https://github.com/begriffs/postgrest.git
+cd postgrest
+stack build
+</code></pre>
+
+<ul>
+<li>Run the server</li>
+</ul>
+<pre><code class="bash">stack exec postgrest -- arg1 arg2
+# ... your arguments after the double dashes
+</code></pre>
+
+<p>If you want to run the test suite, stack can do that too: <code>stack test</code>.</p>
+<h3 id="installing-postgresql">Installing PostgreSQL</h3>
+<p>To use PostgREST you will need an underlying database. You can use something like Amazon <a href="https://aws.amazon.com/rds/">RDS</a> but installing your own locally is cheaper and more convenient for development.</p>
+<ul>
+<li><a href="http://exponential.io/blog/2015/02/21/install-postgresql-on-mac-os-x-via-brew/">Instructions for OS X</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04">Instructions for Ubuntu 14.04</a></li>
+</ul></div>
             
         </div>
 
@@ -263,12 +278,12 @@
             <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
 
-        <script src="./js/jquery-1.10.2.min.js"></script>
-        <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/highlight.pack.js"></script>
-        <script>var base_url = '.';</script>
-        <script data-main="./mkdocs/js/search.js" src="./mkdocs/js/require.js"></script>
-        <script src="./js/base.js"></script>
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
             <div class="modal-dialog">
@@ -297,8 +312,3 @@
 
     </body>
 </html>
-
-<!--
-MkDocs version : 0.14.0
-Build Date UTC : 2015-10-19 23:58:24.099677
--->
