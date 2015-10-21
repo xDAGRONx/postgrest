@@ -208,7 +208,7 @@
         
             <li><a href="#limiting-and-pagination">Limiting and Pagination</a></li>
         
-            <li><a href="#embedding-foreign-keys">Embedding Foreign Keys</a></li>
+            <li><a href="#embedding-foreign-entities">Embedding Foreign Entities</a></li>
         
             <li><a href="#response-format">Response Format</a></li>
         
@@ -225,19 +225,263 @@
 
 <h2 id="requesting-information">Requesting Information</h2>
 <h3 id="tables-and-views">Tables and Views</h3>
+<p>The list of accessible tables and views is provided at</p>
+<pre><code class="HTTP">GET /
+</code></pre>
+
+<p>Every view and table accessible by the active db role is exposed
+in a one-level deep route. For instance the full contents of a table
+<code>people</code> is returned at</p>
+<pre><code class="HTTP">GET /people
+</code></pre>
+
+<p>There are no <code>deeply/nested/routes</code>. Each route provides <code>OPTIONS</code>,
+<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, and <code>DELETE</code> verbs depending entirely
+on database permissions.</p>
+<div class="admonition note">
+  <p class="admonition-title">Design Consideration</p>
+
+  <p>Why not provide nested routes? Many APIs allow nesting to
+  retrieve related information, such as <code>/films/1/director</code>.
+  We offer a more flexible mechanism instead to embed related
+  information, including many-to-many relationships. This is covered
+  in the section about Embedding.</p>
+</div>
+
 <h3 id="stored-procedures">Stored Procedures</h3>
+<p>Every stored procedure is accessible under the <code>/rpc</code> prefix. The
+API endpoint supports only POST which executes the function.</p>
+<pre><code class="HTTP">POST /rpc/proc_name
+</code></pre>
+
+<p>PostgREST supports calling procedures with <a href="http://www.postgresql.org/docs/9.4/static/sql-syntax-calling-funcs.html#SQL-SYNTAX-CALLING-FUNCS-NAMED">named
+arguments</a>.
+To do so include a JSON object in the request payload and each
+key/value of the object will become an argument.</p>
+<div class="admonition note">
+  <p class="admonition-title">Design Consideration</p>
+
+  <p>Why the /rpc prefix? One reason is to avoid name collisions
+  between views and procedures. It also helps emphasize to API
+  consumers that these functions are not normal restful things.
+  The functions can have arbitrary and surprising behavior, not
+  the standard "post creates a resource" thing that users expect
+  from the other routes.</p>
+
+  <p>We considered allowing GET requests for functions that are
+  marked non-volatile but could not reconcile how to pass in
+  parameters. Query string arguments are reserved for shaping/filtering
+  the output, not providing input.</p>
+</div>
+
 <h3 id="filtering">Filtering</h3>
-<h4 id="computed-columns">Computed Columns</h4>
+<h4 id="filtering-rows">Filtering Rows</h4>
+<p>You can filter result rows by adding conditions on columns, each
+condition a query string parameter.  For instance, to return people
+aged under 13 years old:</p>
+<pre><code class="HTTP">GET /people?age=lt.13
+</code></pre>
+
+<p>Adding multiple parameters conjoins the conditions:</p>
+<pre><code class="HTTP">GET /people?age=gte.18&amp;student=is.true
+</code></pre>
+
+<p>These operators are available:</p>
+<table>
+<thead>
+<tr>
+<th>abbreviation</th>
+<th>meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eq</td>
+<td>equals</td>
+</tr>
+<tr>
+<td>gt</td>
+<td>greater than</td>
+</tr>
+<tr>
+<td>lt</td>
+<td>less than</td>
+</tr>
+<tr>
+<td>gte</td>
+<td>greater than or equal</td>
+</tr>
+<tr>
+<td>lte</td>
+<td>less than or equal</td>
+</tr>
+<tr>
+<td>like</td>
+<td>LIKE operator (use * in place of %)</td>
+</tr>
+<tr>
+<td>ilike</td>
+<td>ILIKE operator (use * in place of %)</td>
+</tr>
+<tr>
+<td>@@</td>
+<td>full-text search using to_tsquery</td>
+</tr>
+<tr>
+<td>is</td>
+<td>checking for exact equality (null,true,false)</td>
+</tr>
+<tr>
+<td>in</td>
+<td>one of a list of values e.g. <code>?a=in.1,2,3</code></td>
+</tr>
+<tr>
+<td>not</td>
+<td>negates another operator, see below</td>
+</tr>
+</tbody>
+</table>
+<p>To negate any operator, prefix it with <code>not</code> like <code>?a=not.eq.2</code>.</p>
+<p>For more complicated filters (such as those involving condition 1
+<em>OR</em> condition 2) you will have to create a new view in the database.</p>
+<p>Filters may be applied to <a href="http://www.postgresql.org/docs/current/interactive/xfunc-sql.html#XFUNC-SQL-COMPOSITE-FUNCTIONS">computed
+columns</a>
+as well as actual table/view columns, even though the computed
+columns will not appear in the output.</p>
+<h4 id="filtering-columns">Filtering Columns</h4>
+<p>You can customize which columns are returned by using the <code>select</code>
+parameter:</p>
+<pre><code class="HTTP">GET /people?select=age,height,weight
+</code></pre>
+
+<p>To cast the column types, add a double colon</p>
+<pre><code class="HTTP">GET /people?select=age::text,height,weight
+</code></pre>
+
+<p>Not all type coercions are possible, and you will get an error
+describing any problems from selection or type casting.</p>
+<p>The <code>select</code> keyword is reserved. You thus cannot filter rows based
+on a column named select. Then again it is a reserved SQL keyword
+too, hence an unlikely column name.</p>
 <h4 id="inside-jsonb">Inside JSONB</h4>
+<p>PostgreSQL &gt;=9.4.2 supports native JSON columns and can even index
+them by internal keys using the <code>jsonb</code> column type. PostgREST
+allows you to filter results by internal JSON object values. Use
+the single- and double-arrows to path into and obtain values, e.g.</p>
+<pre><code class="HTTP">GET /stuff?json_col-&gt;a-&gt;&gt;b=eq.2
+</code></pre>
+
+<p>This query finds rows in <code>stuff</code> where <code>json_col-&gt;'a'-&gt;&gt;'b'</code> is
+equal to 2 (or "2" -- it coerces as needed). The final arrow must
+be the double kind, <code>-&gt;&gt;</code>, or else PostgREST will not attempt to
+look inside the JSON.</p>
 <h3 id="ordering">Ordering</h3>
+<p>The reserved word <code>order</code> reorders the response rows.  It uses a
+comma-separated list of columns and directions:</p>
+<pre><code class="HTTP">GET /people?order=age.desc,height.asc
+</code></pre>
+
+<p>If no direction is specified it defaults to descending order:</p>
+<pre><code class="HTTP">GET /people?order=age
+</code></pre>
+
+<p>If you care where nulls are sorted, add <code>nullsfirst</code> or <code>nullslast</code>:</p>
+<pre><code class="HTTP">GET /people?order=age.nullsfirst
+</code></pre>
+
 <h3 id="limiting-and-pagination">Limiting and Pagination</h3>
 <h4 id="pagination-by-limit-offset">Pagination by Limit-Offset</h4>
+<p>PostgREST uses HTTP range headers for limiting and describing the
+size of results. Every response contains the current range and total
+results:</p>
+<pre><code>Range-Unit: items
+Content-Range → 0-14/15
+</code></pre>
+
+<p>This means items zero through fourteen are returned out of a total
+of fifteen -- i.e. all of them. This information is available in
+every response and can help you render pagination controls on the
+client. This is a RFC7233-compliant solution that keeps the response
+JSON cleaner.</p>
+<p>The client can set the limit and offset of a request by setting the
+<code>Range</code> header. Translate the limit and offset into a range. To
+request the first five elements, include these request headers:</p>
+<pre><code>Range-Unit: items
+Range: 0-4
+</code></pre>
+
+<p>You can also use open-ended ranges for an offset with no limit:
+<code>Range: 10-</code>.</p>
 <h4 id="suppressing-counts">Suppressing Counts</h4>
-<h3 id="embedding-foreign-keys">Embedding Foreign Keys</h3>
+<p>Sometimes knowing the total row count of a query is unnecessary and
+only adds extra cost to the database query. So you can skip the
+count total using a <code>Prefer</code> header as:</p>
+<pre><code>Prefer: count=none
+</code></pre>
+
+<p>So the PostgREST response will be something like:</p>
+<pre><code>Range-Unit: items
+Content-Range → 0-14/*
+</code></pre>
+
+<h3 id="embedding-foreign-entities">Embedding Foreign Entities</h3>
+<p>Suppose you have a <code>projects</code> table which references <code>clients</code> through
+a foreign key called <code>client_id</code>. When listing projects through the
+API you can have it embed the client within each project response.
+For example,</p>
+<pre><code class="HTTP">GET /projects?id=eq.1&amp;select=id, name, clients(*)
+</code></pre>
+
+<p>Notice this is the same <code>select</code> keyword which is used to choose
+which columns to include. When a column name is followed by parentheses
+that means to fetch the entire record and nest it. You include a
+list of columns inside the parens, or asterisk to request all
+columns.</p>
+<p>The embedding works for 1-N, N-1, and N-N relationships. That means
+you could also ask for a client and all their projects:</p>
+<pre><code class="HTTP">GET /clients?id=eq.42&amp;select=id, name, projects(*)
+</code></pre>
+
 <h3 id="response-format">Response Format</h3>
+<p>Query responses default to JSON but you can get them in CSV as well. Just make your request with the header</p>
+<pre><code class="HTTP">Accept: text/csv
+</code></pre>
+
 <h3 id="singular-vs-plural">Singular vs Plural</h3>
+<p>Many APIs distinguish plural and singular resources, e.g.<code>/stories</code>
+vs <code>/stories/1</code>. Why do we use <code>/stories?id=eq.1</code>? It is because a
+single resource is for us a row determined by a primary key, and
+primary keys can be <em>compound</em> (meaning defined across more than
+one column). The common urls come from a degenerate case of simple
+(and overwhelmingly numeric) primary keys often introduced automatically
+be Object Relational Mapping.</p>
+<p>For consistency's sake all these endpoints return a JSON array,
+<code>/stories</code>, <code>/stories?genre=eq.mystery</code>, <code>/stories?id=eq.1</code>. They
+are all filtering a bigger array. However you might want the
+last one to return a single JSON object, not an array with one
+element. There is currently an open issue to enable this.</p>
 <h3 id="data-schema">Data Schema</h3>
-<h3 id="cors">CORS</h3></div>
+<p>As well as issuing a <code>GET /</code> to obtain a list of the tables, views,
+and stored procedures available, you can get more information about
+any particular endpoint.</p>
+<pre><code class="HTTP">OPTIONS /my_view
+</code></pre>
+
+<p>This will include the row names, their types, primary key
+information, and foreign keys for the given table or view.</p>
+<div class="admonition danger">
+    <p class="admonition-title">Deprecation Warning</p>
+
+    <p>Although we currently use the OPTIONS verb for this, some
+    people <a
+    href="https://www.mnot.net/blog/2012/10/29/NO_OPTIONS">argue</a> that
+    this is inappropriate. We are considering a <code>describedby</code>
+    header link instead.</p>
+</div>
+
+<h3 id="cors">CORS</h3>
+<p>PostgREST sets highly permissive cross origin resource sharing.  It
+accepts Ajax requests from any domain.</p></div>
             
         </div>
 
