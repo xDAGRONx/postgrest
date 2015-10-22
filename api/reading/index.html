@@ -253,6 +253,10 @@ on database permissions.</p>
 </div>
 
 <h3 id="stored-procedures">Stored Procedures</h3>
+<ul>
+<li>❌ Cannot necessarily be cached or prefetched</li>
+<li>❌ Not necessarily idempotent</li>
+</ul>
 <p>Every stored procedure is accessible under the <code>/rpc</code> prefix. The
 API endpoint supports only POST which executes the function.</p>
 <pre><code class="HTTP">POST /rpc/proc_name
